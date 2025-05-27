@@ -36,7 +36,7 @@ const getSupportRequests = async (req, res) => {
     let query = {};
     
     // If user is not admin, only show their own requests
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' || req.user.role !== 'super admin' || req.user.role !== 'technician') {
       query.userId = req.user._id;
     }
 
