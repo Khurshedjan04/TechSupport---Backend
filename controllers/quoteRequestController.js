@@ -10,6 +10,7 @@ const createQuoteRequest = async (req, res) => {
       serviceType,
       budget,
       timeline,
+      status: 'pending',
     });
 
     await quoteRequest.save();

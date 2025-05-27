@@ -12,7 +12,7 @@ const quoteRequestSchema = new mongoose.Schema({
     trim: true
   },
   budget: {
-    type: Number,
+    type: String,
     required: [true, 'Budget range is required']
   },
   timeline: {

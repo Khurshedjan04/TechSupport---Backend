@@ -33,7 +33,7 @@ const authenticateToken = async (req, res, next) => {
 
 // Authorize admin middleware
 const authorizeAdmin = (req, res, next) => {
-  if (req.user.role !== 'admin') {
+  if (req.user.role !== 'admin' && req.user.role !== 'super admin' && req.user.role !== 'technician') {
     return res.status(403).json({ message: 'Admin access required' });
   }
   next();

@@ -6,11 +6,6 @@ const supportRequestSchema = new mongoose.Schema({
     ref: 'User',
     required: [true, 'User ID is required']
   },
-  userType: {
-    type: String,
-    enum: ['Business', 'Individual'],
-    required: [true, 'User type is required']
-  },
   issue: {
     type: String,
     required: [true, 'Issue description is required'],
@@ -37,7 +32,12 @@ const supportRequestSchema = new mongoose.Schema({
   notes: {
     type: String,
     trim: true
-  }
+  },
+  serviceLocation: {
+    type: String,
+    required: [true, 'Service location is required'],
+    trim: true
+  },
 }, {
   timestamps: true
 });

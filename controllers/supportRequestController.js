@@ -3,14 +3,15 @@ const SupportRequest = require('../models/SupportRequest');
 // Create support request
 const createSupportRequest = async (req, res) => {
   try {
-    const { userType, issue, device, urgency } = req.body;
+    const { issue, device, urgency, serviceLocation } = req.body;
 
     const supportRequest = new SupportRequest({
       userId: req.user._id,
-      userType,
       issue,
       device,
-      urgency
+      urgency,
+      serviceLocation,
+      status:`pending`,
     });
 
     await supportRequest.save();
@@ -40,7 +41,7 @@ const getSupportRequests = async (req, res) => {
     }
 
     const requests = await SupportRequest.find(query)
-      .populate('userId', 'name email')
+      .populate('userId', 'name email accType')
       .sort({ createdAt: -1 });
 
     res.json(requests);
@@ -72,7 +73,7 @@ const updateSupportRequest = async (req, res) => {
       supportRequest
     });
   } catch (error) {
-    res.status(500).json({ message: 'Server error while updating support request' });
+    res.status(500).json({ message: 'Server error while updating support request', errorr });
   }
 };
 
