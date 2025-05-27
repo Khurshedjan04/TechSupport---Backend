@@ -31,7 +31,11 @@ const quoteRequestSchema = new mongoose.Schema({
   adminNotes: {
     type: String,
     trim: true
-  }
+  },
+  assignedTechnic: {
+    type: String,
+    trim: true,
+  },
 }, {
   timestamps: true
 });

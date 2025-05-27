@@ -35,7 +35,7 @@ const getQuoteRequests = async (req, res) => {
     let query = {};
     
     // If user is not admin, only show their own requests
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && req.user.role !== 'super admin' && req.user.role !== 'technician') {
       query.userId = req.user._id;
     }
 
@@ -53,7 +53,7 @@ const getQuoteRequests = async (req, res) => {
 const updateQuoteRequest = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, quotedAmount, adminNotes } = req.body;
+    const { status, assignedTechnic } = req.body;
 
     const quoteRequest = await QuoteRequest.findById(id);
     if (!quoteRequest) {
@@ -62,17 +62,17 @@ const updateQuoteRequest = async (req, res) => {
 
     // Update fields
     if (status) quoteRequest.status = status;
-    if (quotedAmount !== undefined) quoteRequest.quotedAmount = quotedAmount;
-    if (adminNotes !== undefined) quoteRequest.adminNotes = adminNotes;
+    if (assignedTechnic) quoteRequest.assignedTechnic = assignedTechnic;
 
     await quoteRequest.save();
-    await quoteRequest.populate('userId', 'name email');
+    await quoteRequest.populate('userId', 'name email accType');
 
     res.json({
       message: 'Quote request updated successfully',
       quoteRequest
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: 'Server error while updating quote request' });
   }
 };

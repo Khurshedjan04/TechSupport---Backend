@@ -54,7 +54,7 @@ const getSupportRequests = async (req, res) => {
 const updateSupportRequest = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
+    const { status, assignedTechnic } = req.body;
 
     const supportRequest = await SupportRequest.findById(id);
     if (!supportRequest) {
@@ -63,10 +63,11 @@ const updateSupportRequest = async (req, res) => {
 
     // Update fields
     if (status) supportRequest.status = status;
+    if (assignedTechnic) supportRequest.assignedTechnic = assignedTechnic;
      supportRequest.updatedAt = new Date();
 
     await supportRequest.save();
-    await supportRequest.populate('userId', 'name email');
+    await supportRequest.populate('userId', 'name email accType');
 
     res.json({
       message: 'Support request updated successfully',
