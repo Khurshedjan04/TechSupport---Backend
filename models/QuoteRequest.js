@@ -28,14 +28,14 @@ const quoteRequestSchema = new mongoose.Schema({
   quotedAmount: {
     type: Number
   },
-  adminNotes: {
-    type: String,
-    trim: true
-  },
   assignedTechnic: {
     type: String,
     trim: true,
-  },
+  }, 
+  usedItem: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {}
+  }
 }, {
   timestamps: true
 });

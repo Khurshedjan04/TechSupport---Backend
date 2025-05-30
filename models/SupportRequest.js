@@ -30,10 +30,6 @@ const supportRequestSchema = new mongoose.Schema(
     scheduledDate: {
       type: Date,
     },
-    notes: {
-      type: String,
-      trim: true,
-    },
     serviceLocation: {
       type: String,
       required: [true, "Service location is required"],
@@ -42,6 +38,10 @@ const supportRequestSchema = new mongoose.Schema(
     assignedTechnic: {
       type: String,
       trim: true,
+    },
+    usedItem: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
     },
   },
   {

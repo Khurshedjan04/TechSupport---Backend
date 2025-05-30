@@ -11,7 +11,7 @@ const generateToken = (userId) => {
 // Register user
 const registerUser = async (req, res) => {
   try {
-    const { name, accType, email, password, role } = req.body;
+    const { name, accType, email, number, password, role } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -26,6 +26,7 @@ const registerUser = async (req, res) => {
       name,
       accType,
       email,
+      number,
       password,
       role: role || "user",
     });
@@ -112,35 +113,10 @@ const getMe = async (req, res) => {
   }
 };
 
-// Add new admin or technician (admin only)
+// Add new admin or technician (super admin only)
 const addAdminOrTechnician = async (req, res) => {
   try {
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ message: "No token provided" });
-    }
-
-    const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    const currentUser = await User.findById(decoded.userId);
-    const { name, email, password, role } = req.body;
-
-    if (!currentUser || currentUser.role === "technician") {
-      return res
-        .status(403)
-        .json({ message: "Only admins can do this actions" });
-    }
-
-    if (
-      ((!currentUser || currentUser.role === "admin") && role === "admin") ||
-      role === "super admin"
-    ) {
-      return res
-        .status(403)
-        .json({ message: "Only super admins can do this actions" });
-    }
+    const { name, email, phone, password, role } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -149,17 +125,16 @@ const addAdminOrTechnician = async (req, res) => {
         .json({ message: "User already exists with this email" });
     }
 
-    const newUser = new User({ name, email, password, role });
+    const newUser = new User({ name, email, phone, password, role });
     await newUser.save();
 
     res.status(201).json({
-      message: `${
-        role.charAt(0).toUpperCase() + role.slice(1)
-      } added successfully`,
+      message: `${role.charAt(0).toUpperCase() + role.slice(1)} added successfully`,
       user: {
         id: newUser._id,
         name: newUser.name,
         email: newUser.email,
+        email: newUser.phone,
         role: newUser.role,
       },
     });
@@ -168,6 +143,7 @@ const addAdminOrTechnician = async (req, res) => {
     res.status(500).json({ message: "Server error while adding user" });
   }
 };
+
 
 // Delete user (admin only)
 const deleteUser = async (req, res) => {

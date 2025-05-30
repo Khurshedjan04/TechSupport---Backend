@@ -7,6 +7,7 @@ require('dotenv').config();
 const userRoutes = require('./routes/userRoutes');
 const supportRequestRoutes = require('./routes/supportRequestRoutes');
 const quoteRequestRoutes = require('./routes/quoteRequestRoutes');
+const inventoryRoutes = require('./routes/inventoryRoutes');
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/supportRequests', supportRequestRoutes);
 app.use('/api/quoteRequests', quoteRequestRoutes);
 app.use('/api/requests', supportRequestRoutes);
+app.use('/api/inventory', inventoryRoutes);
 
 // Health check route
 app.get('/health', (req, res) => {

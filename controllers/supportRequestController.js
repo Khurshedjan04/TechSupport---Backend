@@ -1,4 +1,4 @@
-const SupportRequest = require('../models/SupportRequest');
+const SupportRequest = require("../models/SupportRequest");
 
 // Create support request
 const createSupportRequest = async (req, res) => {
@@ -11,22 +11,26 @@ const createSupportRequest = async (req, res) => {
       device,
       urgency,
       serviceLocation,
-      status:`pending`,
+      status: `pending`,
+      assignedTechnic: "",
+      usedItem: "",
     });
 
     await supportRequest.save();
-    await supportRequest.populate('userId', 'name email');
+    await supportRequest.populate("userId", "name email");
 
     res.status(201).json({
-      message: 'Support request created successfully',
-      supportRequest
+      message: "Support request created successfully",
+      supportRequest,
     });
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      const errors = Object.values(error.errors).map(err => err.message);
-      return res.status(400).json({ message: 'Validation error', errors });
+    if (error.name === "ValidationError") {
+      const errors = Object.values(error.errors).map((err) => err.message);
+      return res.status(400).json({ message: "Validation error", errors });
     }
-    res.status(500).json({ message: 'Server error while creating support request' });
+    res
+      .status(500)
+      .json({ message: "Server error while creating support request" });
   }
 };
 
@@ -34,19 +38,25 @@ const createSupportRequest = async (req, res) => {
 const getSupportRequests = async (req, res) => {
   try {
     let query = {};
-    
+
     // If user is not admin, only show their own requests
-    if (req.user.role !== 'admin' && req.user.role !== 'super admin' && req.user.role !== 'technician') {
+    if (
+      req.user.role !== "admin" &&
+      req.user.role !== "super admin" &&
+      req.user.role !== "technician"
+    ) {
       query.userId = req.user._id;
     }
 
     const requests = await SupportRequest.find(query)
-      .populate('userId', 'name email accType')
+      .populate("userId", "name email accType number")
       .sort({ createdAt: -1 });
 
     res.json(requests);
   } catch (error) {
-    res.status(500).json({ message: 'Server error while fetching support requests' });
+    res
+      .status(500)
+      .json({ message: "Server error while fetching support requests" });
   }
 };
 
@@ -58,23 +68,56 @@ const updateSupportRequest = async (req, res) => {
 
     const supportRequest = await SupportRequest.findById(id);
     if (!supportRequest) {
-      return res.status(404).json({ message: 'Support request not found' });
+      return res.status(404).json({ message: "Support request not found" });
     }
 
     // Update fields
     if (status) supportRequest.status = status;
     if (assignedTechnic) supportRequest.assignedTechnic = assignedTechnic;
-     supportRequest.updatedAt = new Date();
+    supportRequest.updatedAt = new Date();
 
     await supportRequest.save();
-    await supportRequest.populate('userId', 'name email accType');
+    await supportRequest.populate("userId", "name email accType number");
 
     res.json({
-      message: 'Support request updated successfully',
-      supportRequest
+      message: "Support request updated successfully",
+      supportRequest,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Server error while updating support request', errorr });
+    res
+      .status(500)
+      .json({ message: "Server error while updating support request", errorr });
+  }
+};
+
+// Update support request (technician only)
+const updateSupportRequestByTechnician = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { usedItem, status } = req.body;
+
+    const supportRequest = await SupportRequest.findById(id);
+    if (!supportRequest) {
+      return res.status(404).json({ message: "Support request not found" });
+    }
+
+    // Update only allowed fields
+    if (usedItem) supportRequest.usedItem = usedItem;
+    if (status) supportRequest.status = status;
+    supportRequest.updatedAt = new Date();
+
+    await supportRequest.save();
+    await supportRequest.populate("userId", "name email accType number");
+
+    res.json({
+      message: "Support request updated by technician",
+      supportRequest,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Server error while updating support request by technician",
+    });
   }
 };
 
@@ -85,20 +128,23 @@ const deleteSupportRequest = async (req, res) => {
 
     const supportRequest = await SupportRequest.findById(id);
     if (!supportRequest) {
-      return res.status(404).json({ message: 'Support request not found' });
+      return res.status(404).json({ message: "Support request not found" });
     }
 
     await SupportRequest.findByIdAndDelete(id);
 
-    res.json({ message: 'Support request deleted successfully' });
+    res.json({ message: "Support request deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: 'Server error while deleting support request' });
+    res
+      .status(500)
+      .json({ message: "Server error while deleting support request" });
   }
 };
 
 module.exports = {
   createSupportRequest,
   getSupportRequests,
+  updateSupportRequestByTechnician,
   updateSupportRequest,
-  deleteSupportRequest
+  deleteSupportRequest,
 };

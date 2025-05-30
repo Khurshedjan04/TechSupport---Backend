@@ -3,9 +3,10 @@ const {
   createSupportRequest,
   getSupportRequests,
   updateSupportRequest,
-  deleteSupportRequest
+  deleteSupportRequest,
+  updateSupportRequestByTechnician
 } = require('../controllers/supportRequestController');
-const { authenticateToken, authorizeAdmin } = require('../middleware/auth');
+const { authenticateToken, authorizeAdmin, authorizeTechnician } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -16,5 +17,8 @@ router.get('/', authenticateToken, getSupportRequests);
 // Admin only routes
 router.put('/:id', authenticateToken, authorizeAdmin, updateSupportRequest);
 router.delete('/:id', authenticateToken, authorizeAdmin, deleteSupportRequest);
+
+// Technician only routes
+router.put("/tech/:id", authenticateToken, authorizeTechnician, updateSupportRequestByTechnician);
 
 module.exports = router;
