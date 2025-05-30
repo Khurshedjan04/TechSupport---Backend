@@ -12,7 +12,7 @@ const {
   decrementInventoryItem,
   getLowStockItems,
   getInventoryItems,
-} = require("../controllers/Inventory");
+} = require("../controllers/inventory");
 
 // Admin & Technician routes (read access)
 router.get(
